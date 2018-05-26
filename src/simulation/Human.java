@@ -62,6 +62,8 @@ public class Human implements Steppable{
 	private Path currentPath;
 	private RegionPath currentRegionPath;
 	private String pRegionID;
+	private String ppRegionID; //placeholder for copy of pRegionID
+	private String pppRegionID;
 	private Tile pTile;
 	
 	private Tile currentTargetTile;
@@ -69,6 +71,7 @@ public class Human implements Steppable{
 	
 	boolean isWaiting = false;
 	boolean finish;
+	boolean isChangingLevel = false;
 	int iteneraryCount; // 0 start, 1, lobby, 2, destLobby, 3 destination
 	
 	boolean isUsingElevator = false;
@@ -79,6 +82,7 @@ public class Human implements Steppable{
 	String id;
 	
 	Floor currentFloor;
+	Floor previousFloor;
 	
 	SimState simulation;
 	
@@ -98,6 +102,7 @@ public class Human implements Steppable{
 		this.id = this.uuid.toString();
 		Int3D location = tile.getLocation();
 		this.currentFloor = tile.getRegion().getFloor();
+		this.previousFloor = null;
 		this.metricMaxSpeed = ProcessingDisplay.HUMANSPEED;//139
 		this.metricAcceleration = 200;//100
 		this.maxSpeed = (this.metricMaxSpeed/(double)Simulation.GRIDDIMENSION)/100;
@@ -291,6 +296,7 @@ public class Human implements Steppable{
 		Path path = setPath();
 		if (path != null){
 			this.currentPath = path;
+			this.ppRegionID = pRegionID;
 			this.pRegionID = null;
 			this.pTile = null;
 			setCurrentRegionPath();
@@ -490,6 +496,9 @@ public class Human implements Steppable{
 		Path path = new Path(currentTile, this.itenerary.getItenerary(2), currentFloor.getNetworkAll());
 		this.iteneraryCount++;
 		this.elevatorMode = Human.NONE;
+		//change current floor status
+		this.previousFloor = this.currentFloor;
+		this.currentFloor = currentTile.getRegion().getFloor();
 		return path;
 	}
 	
@@ -499,12 +508,48 @@ public class Human implements Steppable{
 		Car car = this.currentElevator.getCar();
 		car.setExitHoldListUnregistration(level, this);
 	}
-	
+
 	
 	RegionPath getNextRegionPath(String pRegionID){
+
 		RegionPath regionPath = this.currentPath.getNextRegionPath(pRegionID);
 		if (regionPath != null){
+			if (pRegionID !=null) {
+					Region region = this.currentFloor.getRegion(pRegionID);
+					region.decrementHuman();
+
+				//if (region !=null){
+
+				/*} else{ //indicating change floor level due to elevator exit
+					this.previousFloor.getRegion(pRegionID).decrementHuman();
+				}*/
+			} else { //pRegion is null indicating a new path
+				System.out.println("this is the catch");
+				if (this.ppRegionID != null){
+					System.out.println("this is current floor");
+					Region region = this.currentFloor.getRegion(this.ppRegionID);
+					if (region == null){
+						System.out.println("this is different floor");
+						region = this.previousFloor.getRegion(this.ppRegionID);
+					}
+					this.ppRegionID = null;
+					region.decrementHuman();
+				} else {
+					System.out.println("this is reset situation");
+					if (pppRegionID != null){
+						Region region = this.previousFloor.getRegion(this.pppRegionID);
+						if (region != null) {
+							region.decrementHuman();
+						}
+					}
+				}
+			}
 			this.pRegionID = regionPath.getID();
+			System.out.println(this.getCurrentLevel());
+			System.out.println(this.pRegionID);
+			Floor currentFloor = Simulation.getFloor(this.getCurrentLevel());
+			System.out.println(currentFloor.getRegion(this.pRegionID).getID());
+			currentFloor.getRegion(this.pRegionID).incrementHuman();
 			return regionPath;
 		} else {
 			return null;
@@ -644,6 +689,8 @@ public class Human implements Steppable{
 	
 	void resetAgent(){
 		checkPoint();
+		this.pppRegionID = this.pRegionID;
+		this.previousFloor = this.currentFloor;
 		Tile firstTile = this.itenerary.getStart();
 		Int3D location = firstTile.getLocation();
 		Simulation.continuous3D.setObjectLocation(this, new Double3D(location.x, location.y, location.z));
@@ -718,10 +765,9 @@ public class Human implements Steppable{
 	}
 	
 	void resetRandomAgent(){
-		/*Tile currentTile = this.getCurrentTile();
+		Tile currentTile = this.getCurrentTile();
 		Floor currentFloor = currentTile.getRegion().getFloor();
-		
-		
+
 		Floor nextFloor = null;
 		boolean isItenerary = false;
 		Itenerary newItenerary = null;
@@ -738,8 +784,8 @@ public class Human implements Steppable{
 			
 		} while (isItenerary == false);
 		this.setItenerary(newItenerary);
-		*/
-		boolean isItenerary = false;
+
+		/*boolean isItenerary = false;
 		Itenerary newItenerary = null;
 		do{
 			Floor floorA = HumanGenerator.getRandomFloor();
@@ -755,7 +801,7 @@ public class Human implements Steppable{
 			newItenerary.setFinish(tileB);
 			isItenerary = newItenerary.calculateItenerary();
 		} while(isItenerary == false);
-		this.setItenerary(newItenerary);
+		this.setItenerary(newItenerary);*/
 		
 		resetAgent();
 	}

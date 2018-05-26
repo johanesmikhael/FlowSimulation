@@ -1,5 +1,6 @@
 package processing;
 
+import controlP5.*;
 import processing.core.PApplet;
 import sim.util.Int3D;
 import simulation.Human;
@@ -7,11 +8,6 @@ import simulation.HumanGenerator;
 import simulation.Itenerary;
 import simulation.Simulation;
 import simulation.Tile;
-import controlP5.Accordion;
-import controlP5.CColor;
-import controlP5.ControlEvent;
-import controlP5.ControlP5;
-import controlP5.Group;
 
 public class P5 {
 	PApplet applet;
@@ -20,6 +16,7 @@ public class P5 {
 	Accordion accordion;
 	Group propertiesGroup;
 	Group inputDataGroup;
+	Group visibilityGroup;
 	
 	static final String SETPATHDEF = "click to set the path";
 	static final String SETPATH1 = "define start point";
@@ -51,6 +48,7 @@ public class P5 {
 		setSimulationControl();
 		setPropertiesPanel();
 		setInputDataPanel();
+		setVisibilityPanel();
 		setAccordion();
 	}
 	
@@ -129,7 +127,7 @@ public class P5 {
 	void setInputDataPanel(){
 		inputDataGroup = cp5.addGroup("input_data");
 		inputDataGroup.setBackgroundColor(backgroundColor);
-		inputDataGroup.setBackgroundHeight(BASELINE * 10);
+		inputDataGroup.setBackgroundHeight(BASELINE * 12);
 		inputDataGroup.setHeight(BASELINE);
 		float pX = MARGIN;
 		float pY = BASELINE;
@@ -143,9 +141,44 @@ public class P5 {
 				.setWidth(BASELINE * 8)
 				.setText(SETPATHDEF)
 				.moveTo(inputDataGroup);
+		cp5.addTextfield("input_number_agent")
+				.setPosition(pX, pY + 4 * BASELINE)
+				.setWidth(BASELINE * 8)
+				.setInputFilter(ControlP5.INTEGER)
+				.setAutoClear(false)
+				.setText(Integer.toString(ProcessingDisplay.RANDOMAGENTNUM))
+				.setStringValue(Integer.toString(ProcessingDisplay.RANDOMAGENTNUM))
+				.moveTo(inputDataGroup);
+		cp5.addButton("set_number_agent")
+				.setPosition(pX, pY + 8 * BASELINE)
+				.setHeight(BASELINE + 2)
+				.setWidth(BASELINE * 8)
+				.moveTo(inputDataGroup);
 	}
-	
-	
+
+	void setVisibilityPanel() {
+		visibilityGroup = cp5.addGroup("visibility_control");
+		visibilityGroup.setBackgroundColor(backgroundColor);
+		visibilityGroup.setBackgroundHeight(BASELINE * 12);
+		visibilityGroup.setHeight(BASELINE);
+		float pX = MARGIN;
+		float pY = BASELINE;
+		CheckBox checkBox = cp5.addCheckBox("visibility_checkbox")
+				.setPosition(pX, pY)
+				.setSize(BASELINE + 2, BASELINE + 2)
+				.moveTo(visibilityGroup)
+				.setItemsPerRow(1)
+				.addItem("floor", 0)
+				.addItem("elevator", 0)
+				.addItem("moving_agent", 0);
+		float[] value = new float[3];
+		value[0] = ProcessingDisplay.floorVisibility;
+		value[1] = ProcessingDisplay.elevatorVisibility;
+		value[2] = ProcessingDisplay.agentVisibility;
+		checkBox.setArrayValue(value);
+	}
+
+
 	void setSimulationControl(){
 		float gap = 6;
 		float divWidth = Math.round((PANEL_WIDTH - gap * 2) / 3);
@@ -177,8 +210,9 @@ public class P5 {
 				 .setPosition(pX, pY)
 				 .setWidth(PANEL_WIDTH)
 				 .addItem(propertiesGroup)
-				 .addItem(inputDataGroup);
-		 accordion.open(0, 1);
+				 .addItem(inputDataGroup)
+				 .addItem(visibilityGroup);
+		 accordion.open(0, 1, 2);
 		 accordion.setCollapseMode(Accordion.MULTI);
 	}
 	
@@ -187,7 +221,10 @@ public class P5 {
 	}
 	
 	public void controlEvent(ControlEvent theEvent) {
-		String cName = theEvent.getController().getName();
+		///System.out.println(theEvent.getClass().toString());
+		String cName = theEvent.getName();
+		//System.out.println(theEvent.getGroup().toString());
+		//String cName = theEvent.getController().getName();
 		if(cName.equals("start")){
 			start(theEvent);
 		}
@@ -200,8 +237,15 @@ public class P5 {
 		if(cName.equals("set_itenerary")){
 			setItenerary();
 		}
+		if(cName.equals("set_number_agent")){
+			setNumberAgent();
+		}
+		if(cName.equals("visibility_checkbox")){
+			setModelVisibility();
+		}
 	}
-	
+
+
 	void start(ControlEvent theEvent){
 		ProcessingDisplay.setRun(true);
 	  	applet.thread("runSimulation");
@@ -257,11 +301,30 @@ public class P5 {
 						human.setVariableType(Human.TESTEDAGENT);
 						human.setItenerary(Simulation.agentPath);
 						model.addHuman(human);
-						HumanGenerator.generateHuman(ProcessingDisplay.RANDOMAGENTNUM, model);
+						//HumanGenerator.generateHuman(ProcessingDisplay.RANDOMAGENTNUM, model);
 					}
 				}
 			}
 		}
+	}
+
+	void setNumberAgent() {
+		Textfield textfield = (Textfield) cp5.getController("input_number_agent");
+		textfield.submit(); //make sure the text input on the field are submitted
+		int agentNumber = Integer.valueOf(cp5.getController("input_number_agent").getStringValue());
+		HumanGenerator.generateHuman(agentNumber, model);
+	}
+
+	void setModelVisibility() {
+		ControllerGroup checkbox = cp5.getGroup("visibility_checkbox");
+		float[] values = checkbox.getArrayValue();
+		/*for (int i=0; i<values.length;i++) {
+			int n = (int)checkbox.getArrayValue()[i];
+			System.out.println(n);
+		}*/
+		ProcessingDisplay.floorVisibility = (int) values[0];
+		ProcessingDisplay.elevatorVisibility = (int) values[1];
+		ProcessingDisplay.agentVisibility = (int) values[2];
 	}
 	
 	

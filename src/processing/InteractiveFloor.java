@@ -182,6 +182,7 @@ public class InteractiveFloor{
     	int normalColor;
     	int activeColor;
     	int inActiveColor;
+    	int densityColor;
     	int grabColor = applet.color(255,255,0,128);
     	boolean isVisible;
     	String id;
@@ -243,6 +244,10 @@ public class InteractiveFloor{
     		this.activeColor = applet.color(r, g, b, ACTIVEALPHA);
     		this.inActiveColor = applet.color(r, g, b, INACTIVEALPHA);
     	}
+
+    	void setDensityColor(){
+
+		}
     	
     	int getColor(){
     		return this.color;

@@ -175,7 +175,7 @@ public class Environment {
 			elvID = id;			
 		}
 		if (elvType == Elevator.BEDELEVATOR){
-			if (Simulation.elevatorHash.size() < 2){
+			if (true){//Simulation.elevatorHash.size() < 2
 				Elevator elevator = new Elevator(elvName, elvID, elvIndex, elvType, elvAccessibility, 5);
 				if (Simulation.isElevatorRandom == true){
 					elevator.randomize();

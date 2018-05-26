@@ -185,20 +185,24 @@ public class EnvironmentModel {
 	public void setActive(boolean isActive){
 		this.isActive = isActive;
 	}
+
 	
-	public boolean isGrab(){
-		return this.isGrab();
-	}
-	
-	public void draw(){
-		for (HumanPortrayal human : humans){
-			human.draw();
+	public void draw() {
+		// need improvement in visibility control
+		if (ProcessingDisplay.agentVisibility == 1) {
+			for (HumanPortrayal human : humans) {
+				human.draw();
+			}
 		}
-		for (ElevatorPortrayal elevator : elevators.values()){
-			elevator.draw();
+		if (ProcessingDisplay.elevatorVisibility == 1) {
+			for (ElevatorPortrayal elevator : elevators.values()) {
+				elevator.draw();
+			}
 		}
-		for (InteractiveFloor floor : floors){
-			floor.draw();
-		}	
+		if (ProcessingDisplay.floorVisibility == 1) {
+			for (InteractiveFloor floor : floors) {
+				floor.draw();
+			}
+		}
 	}
 }

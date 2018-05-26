@@ -88,7 +88,7 @@ public class Simulation extends SimState {
 			schedule.scheduleRepeating(human);
 		}
 	}
-	
+
 	
 	public static void main(String[] args){
 		doLoop(Simulation.class, args);
@@ -118,6 +118,12 @@ public class Simulation extends SimState {
 		int elevation = Simulation.floorLeveltoElevationMap.get(level);
 		int index = Simulation.floorElevationList.indexOf(elevation);
 		return index;
+	}
+
+	public static Floor getFloor (int level){
+		int elevation = Simulation.floorLeveltoElevationMap.get(level);
+		Floor floor = floorHash.get(elevation);
+		return floor;
 	}
 	
 	public static ProcessingDisplay getApplet(){

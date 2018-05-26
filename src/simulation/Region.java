@@ -42,7 +42,13 @@ public class Region {
 	//private int priority;
 	
 	private boolean isElevatorLobby = false;
-	
+
+	//density
+	private double density;
+	private int humanCounter;
+	private double area;
+
+
 	public Region(){
 		
 	}
@@ -66,6 +72,46 @@ public class Region {
 		//create undirected graph
 		this.tilesNetwork = new Network(false);
 		//this.priority = 0;
+		this.density = 0.0;
+		this.humanCounter = 0;
+		this.area = 0.0;
+	}
+
+	public int decrementHuman(){
+		if (this.type != ELEVATORREGION){
+			this.humanCounter -= 1;
+			System.out.println(this.getID());
+			System.out.println("decreased : " + Integer.toString(this.humanCounter));
+		}
+		return this.humanCounter;
+	}
+
+	public int incrementHuman(){
+		if (this.type != ELEVATORREGION){
+			this.humanCounter += 1;
+			System.out.println(this.getID());
+			System.out.println("increased : " + Integer.toString(this.humanCounter));
+		}
+		return this.humanCounter;
+	}
+
+	public double getArea(){
+		if (this.area == 0.0) { // the area is not set et
+			int tileNum = this.hashTile.size() + 1;
+			this.area = tileNum * Simulation.GRIDDIMENSION * Simulation.GRIDDIMENSION / 10000;
+		}
+		return this.area;
+	}
+
+	public double getDensity(){
+		area = this.getArea();
+		if (area != 0){
+			this.density = this.humanCounter/area;
+			return this.density;
+		}
+		else {
+			return 0.0;
+		}
 	}
 	
 	public boolean isElevatorLobby(){

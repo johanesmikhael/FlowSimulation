@@ -53,11 +53,11 @@ public class ProcessingDisplay extends PApplet {
 	
 	public static final int OBSERVEMODE = 0;
 	public static final int SELECTMODE = 1;
-	
+
 	public static int  interfaceMode = SELECTMODE;
-	
-	SimState state;
-	Scene scene;
+
+	private SimState state;
+	private Scene scene;
 	EnvironmentModel environmentModel;
 	//FloorSurface floorSurface;
 	FloorNetwork floorNetwork;
@@ -68,6 +68,12 @@ public class ProcessingDisplay extends PApplet {
 	static boolean isPaused = false;
 	static boolean isRun = false;
 	boolean init = false;
+
+	//visibility control
+	static int floorVisibility = 1;
+	static int elevatorVisibility = 1;
+	static int agentVisibility = 1;
+
 	
 	static boolean isSaveFrame = false;
 	
@@ -154,7 +160,7 @@ public class ProcessingDisplay extends PApplet {
         
 /////////////////////////////METHODS
    void setupFrame(){	
-   	size(2049, 1152, OPENGL);//1366,768 1024, 600
+   	size(2049, 1152, OPENGL);//1366,768 1024, 600  2049, 1152
    	scene = new Scene(this);
    	Vec vec = new Vec();
    	scene.eye().setSceneRadius(400);

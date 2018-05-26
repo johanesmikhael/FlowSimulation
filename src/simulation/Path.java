@@ -103,11 +103,11 @@ public class Path extends Route {
 			} else {
 				return null;
 			}
-		} else {
+		} else { // regionID is null, indicates it is the start of path.
 			if (!this.regionList.isEmpty()){
 				String nextRegionID = this.regionList.get(0).getID();
 				return this.regionPathHash.get(nextRegionID);
-			} else {
+			} else { // regionList is empty
 				return null;
 			}		
 		}
