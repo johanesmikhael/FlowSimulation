@@ -80,8 +80,8 @@ public class Region {
 	public int decrementHuman(){
 		if (this.type != ELEVATORREGION){
 			this.humanCounter -= 1;
-			System.out.println(this.getID());
-			System.out.println("decreased : " + Integer.toString(this.humanCounter));
+			//System.out.println(this.getID());
+			//System.out.println("decreased : " + Integer.toString(this.humanCounter));
 		}
 		return this.humanCounter;
 	}
@@ -89,8 +89,8 @@ public class Region {
 	public int incrementHuman(){
 		if (this.type != ELEVATORREGION){
 			this.humanCounter += 1;
-			System.out.println(this.getID());
-			System.out.println("increased : " + Integer.toString(this.humanCounter));
+			//System.out.println(this.getID());
+			//System.out.println("increased : " + Integer.toString(this.humanCounter));
 		}
 		return this.humanCounter;
 	}

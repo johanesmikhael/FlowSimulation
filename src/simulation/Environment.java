@@ -185,7 +185,7 @@ public class Environment {
 			}		
 		}
 		if (elvType == Elevator.GENERALELEVATOR){
-			if (false){
+			if (true){
 				Elevator elevator = new Elevator(elvName, elvID, elvIndex, elvType, elvAccessibility, 10);
 				if (Simulation.isElevatorRandom == true){
 					elevator.randomize();

@@ -69,12 +69,19 @@ public class ProcessingDisplay extends PApplet {
 	static boolean isRun = false;
 	boolean init = false;
 
+	//floorMode
+	public static final int NORMALMODE = 0;
+	public static final int DENSITYMODE = 1;
+
 	//visibility control
 	static int floorVisibility = 1;
 	static int elevatorVisibility = 1;
 	static int agentVisibility = 1;
+	static int floorMode = ProcessingDisplay.DENSITYMODE;
 
-	
+	//maximum density for visualization
+	public static final double MAXDENSITY = 1.5;
+
 	static boolean isSaveFrame = false;
 	
 	DOF2Event prevEvent, event;
@@ -160,7 +167,7 @@ public class ProcessingDisplay extends PApplet {
         
 /////////////////////////////METHODS
    void setupFrame(){	
-   	size(2049, 1152, OPENGL);//1366,768 1024, 600  2049, 1152
+   	size(2500, 1600, OPENGL);//1366,768 1024, 600  2049, 1152
    	scene = new Scene(this);
    	Vec vec = new Vec();
    	scene.eye().setSceneRadius(400);

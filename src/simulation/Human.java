@@ -518,24 +518,19 @@ public class Human implements Steppable{
 					Region region = this.currentFloor.getRegion(pRegionID);
 					region.decrementHuman();
 
-				//if (region !=null){
-
-				/*} else{ //indicating change floor level due to elevator exit
-					this.previousFloor.getRegion(pRegionID).decrementHuman();
-				}*/
 			} else { //pRegion is null indicating a new path
-				System.out.println("this is the catch");
+				//System.out.println("this is the catch");
 				if (this.ppRegionID != null){
-					System.out.println("this is current floor");
+				//	System.out.println("this is current floor");
 					Region region = this.currentFloor.getRegion(this.ppRegionID);
 					if (region == null){
-						System.out.println("this is different floor");
+				//		System.out.println("this is different floor");
 						region = this.previousFloor.getRegion(this.ppRegionID);
 					}
 					this.ppRegionID = null;
 					region.decrementHuman();
 				} else {
-					System.out.println("this is reset situation");
+				//	System.out.println("this is reset situation");
 					if (pppRegionID != null){
 						Region region = this.previousFloor.getRegion(this.pppRegionID);
 						if (region != null) {
@@ -545,10 +540,10 @@ public class Human implements Steppable{
 				}
 			}
 			this.pRegionID = regionPath.getID();
-			System.out.println(this.getCurrentLevel());
-			System.out.println(this.pRegionID);
+			//System.out.println(this.getCurrentLevel());
+			//System.out.println(this.pRegionID);
 			Floor currentFloor = Simulation.getFloor(this.getCurrentLevel());
-			System.out.println(currentFloor.getRegion(this.pRegionID).getID());
+			//System.out.println(currentFloor.getRegion(this.pRegionID).getID());
 			currentFloor.getRegion(this.pRegionID).incrementHuman();
 			return regionPath;
 		} else {

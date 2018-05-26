@@ -128,7 +128,7 @@ public class InteractiveFloor{
 	
 	public void processRegion(Region region, int color){
 		String id = region.getID();
-		RegionArea regionArea = new RegionArea(this, scene, id);
+		RegionArea regionArea = new RegionArea(this, scene, id, region);
 		for(Tile tileObject : region.getTiles()){
 			Int3D location = tileObject.getLocation();
 			Area tile = EnvironmentModel.createAreaTile(location.x, location.y);
@@ -183,9 +183,13 @@ public class InteractiveFloor{
     	int activeColor;
     	int inActiveColor;
     	int densityColor;
+    	int densityNormalColor;
+		int densityActiveColor;
+		int densityInActiveColor;
     	int grabColor = applet.color(255,255,0,128);
     	boolean isVisible;
     	String id;
+    	Region region;
     	
     	int z;
     	List<float[]> vertexList;
@@ -195,7 +199,7 @@ public class InteractiveFloor{
     	int height;
     	int width;
     	
-    	RegionArea(InteractiveFloor iFloor, Scene scene, String id){
+    	RegionArea(InteractiveFloor iFloor, Scene scene, String id, Region region){
     		super(scene);
     		this.id = id;
     		area = new Area();
@@ -203,6 +207,7 @@ public class InteractiveFloor{
     		z = elevation;
     		this.floor = iFloor;
     		this.isVisible = this.floor.isVisible();
+    		this.region = region;
     	}
     	
     	void add(Area newArea){
@@ -245,13 +250,36 @@ public class InteractiveFloor{
     		this.inActiveColor = applet.color(r, g, b, INACTIVEALPHA);
     	}
 
-    	void setDensityColor(){
 
-		}
-    	
     	int getColor(){
     		return this.color;
     	}
+
+    	void setDensityColor(){
+			double density = this.region.getDensity();
+			//System.out.println(this.id + " density : " + density);
+			double minDensity = 0;
+			double maxDensity = ProcessingDisplay.MAXDENSITY;
+			applet.colorMode(PConstants.HSB);
+			float hue = (float) (128.0f - density/maxDensity * 128);
+			float sat = (float) (density/maxDensity * 255);
+			float brg = 255;
+			float alpha = (float) ( 10 + density/maxDensity * 245);
+			if (density > ProcessingDisplay.MAXDENSITY){
+				hue = 255;
+				sat = 255;
+				alpha = 255;
+			}
+			int color = applet.color(hue, sat, brg, alpha);
+			this.densityColor = color;
+			applet.colorMode(PConstants.RGB);
+			int r = (this.densityColor  >> 16) & 0xFF;  // Faster way of getting red(argb)
+			int g = (this.densityColor  >> 8) & 0xFF;   // Faster way of getting green(argb)
+			int b = this.densityColor  & 0xFF;          // Faster way of getting blue(argb)
+			this.densityNormalColor = applet.color(r, g, b, NORMALALPHA);
+			this.densityActiveColor = applet.color(r, g, b, alpha);
+			this.densityInActiveColor = applet.color(r, g, b, 0);
+		}
     	
     	void setHeight(int z){
     		this.z = z;
@@ -320,6 +348,9 @@ public class InteractiveFloor{
 		}
     	
     	public void draw(){
+    		if (applet.frameCount % 10 == 0){
+    			this.setDensityColor();
+			}
     		if(this.isVisible == false){
     			return;
     		}
@@ -331,20 +362,36 @@ public class InteractiveFloor{
     		this.setScaling(1);
     		this.applyTransformation();
     		
-    		int color;
-    		if (model.isActive() == false){
-    			color = this.color;
-    		} else {
-    			if (isActive == true){
-    				color = activeColor;
-    			} else {
-    				if(model.isFloorActive() == true){
-    					color = inActiveColor;
-    				} else {
-    					color = normalColor;
-    				}
-    			}
-    		}
+    		int color = 0;
+    		if (ProcessingDisplay.floorMode == ProcessingDisplay.NORMALMODE){
+				if (model.isActive() == false){
+					color = this.color;
+				} else {
+					if (isActive == true){
+						color = activeColor;
+					} else {
+						if(model.isFloorActive() == true){
+							color = inActiveColor;
+						} else {
+							color = normalColor;
+						}
+					}
+				}
+			} else if(ProcessingDisplay.floorMode == ProcessingDisplay.DENSITYMODE){
+				if (model.isActive() == false){
+					color = this.densityColor;
+				} else {
+					if (isActive == true){
+						color = densityActiveColor;
+					} else {
+						if(model.isFloorActive() == true){
+							color = densityInActiveColor;
+						} else {
+							color = densityNormalColor;
+						}
+					}
+				}
+			}
     		if (model.isGrab == true){
     			color = grabColor;
     		} else if (isGrab == true){
