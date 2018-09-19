@@ -69,6 +69,15 @@ public class Simulation extends SimState {
 		Environment.setup();
 		setReady(true);
 		//timedummy
+		//Time time = new Time();
+		//RateAdjuster rate = new RateAdjuster(SIMULATIONSPEED);
+		///schedule.scheduleRepeating(time);
+		//schedule.scheduleRepeating(rate);
+		//scheduleElevators();
+		//scheduleAgents();
+	}
+
+	public void startSimulation(){
 		Time time = new Time();
 		RateAdjuster rate = new RateAdjuster(SIMULATIONSPEED);
 		schedule.scheduleRepeating(time);
@@ -87,6 +96,11 @@ public class Simulation extends SimState {
 		for (Human human : Simulation.humanList){
 			schedule.scheduleRepeating(human);
 		}
+	}
+
+	public void clearAgents(){
+		Simulation.humanList.clear();
+		schedule.reset();
 	}
 
 	

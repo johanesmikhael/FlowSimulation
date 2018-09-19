@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.awt.geom.*;
+import java.awt.Toolkit;
+import java.awt.Dimension;
 
 import controlP5.ControlEvent;
 import processing.core.*;
@@ -23,6 +25,8 @@ import simulation.Floor;
 import simulation.Region;
 import simulation.Simulation;
 import simulation.Tile;
+
+
 
 public class ProcessingDisplay extends PApplet {
 	
@@ -77,6 +81,7 @@ public class ProcessingDisplay extends PApplet {
 	static int floorVisibility = 1;
 	static int elevatorVisibility = 1;
 	static int agentVisibility = 1;
+	static int networkVisibility = 1;
 	static int floorMode = ProcessingDisplay.DENSITYMODE;
 
 	//maximum density for visualization
@@ -159,15 +164,18 @@ public class ProcessingDisplay extends PApplet {
 	}
    
    public boolean sketchFullScreen() {
-	   return false;
+	   return true;
 	 }
 
     
 
         
 /////////////////////////////METHODS
-   void setupFrame(){	
-   	size(2500, 1600, OPENGL);//1366,768 1024, 600  2049, 1152
+   void setupFrame(){
+   	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+   	int screenHeight = (int)screenSize.getHeight();
+   	int screenWidth = (int)screenSize.getWidth();
+   	size(screenWidth, screenHeight, OPENGL);//1366,768 1024, 600  2049, 1152
    	scene = new Scene(this);
    	Vec vec = new Vec();
    	scene.eye().setSceneRadius(400);
@@ -183,7 +191,7 @@ public class ProcessingDisplay extends PApplet {
     	if (Simulation.isReady() == true){
     		//setFloorSurface();
     		setEnvironmentModel();
-    		//setFloorNetwork();
+    		setFloorNetwork();
     		//setFloorTile();
     		setupControl();
     		init = true;
@@ -192,6 +200,7 @@ public class ProcessingDisplay extends PApplet {
     
     void display(){
     	displayEnvironmentModel();
+    	displayFloorNetwork();
     	scene.beginScreenDrawing();
 		displayControl();
 		scene.endScreenDrawing();
@@ -201,14 +210,20 @@ public class ProcessingDisplay extends PApplet {
     	state = new Simulation(System.currentTimeMillis(), this);
     	state.start();
     }
-    
+
     public void runSimulation(){
     	Simulation simulation = (Simulation) state;
-    	simulation.scheduleAgents();
+		simulation.startSimulation();
     		do
     			state.schedule.step(state);
     		while(isRun == true);
     }
+
+    public void resetSimulation(){
+    	this.environmentModel.clearHumanAgents();
+    	Simulation simulation = (Simulation) state;
+    	simulation.clearAgents();
+	}
     
     void setupControl(){
     	controlPanel = new ControlPanel(this, environmentModel);
@@ -247,7 +262,9 @@ public class ProcessingDisplay extends PApplet {
     
     
     void displayFloorNetwork(){
-    	floorNetwork.displayNetworkEdges();
+    	if (networkVisibility == 1){
+			floorNetwork.displayNetworkEdges();
+		}
     }
      
     public static void setRun(boolean isRun){

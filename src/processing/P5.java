@@ -8,6 +8,7 @@ import simulation.HumanGenerator;
 import simulation.Itenerary;
 import simulation.Simulation;
 import simulation.Tile;
+import javax.swing.JOptionPane;
 
 public class P5 {
 	PApplet applet;
@@ -170,11 +171,13 @@ public class P5 {
 				.setItemsPerRow(1)
 				.addItem("floor", 0)
 				.addItem("elevator", 0)
-				.addItem("moving_agent", 0);
-		float[] value = new float[3];
+				.addItem("moving_agent", 0)
+				.addItem("floor_network", 0);
+		float[] value = new float[4];
 		value[0] = ProcessingDisplay.floorVisibility;
 		value[1] = ProcessingDisplay.elevatorVisibility;
 		value[2] = ProcessingDisplay.agentVisibility;
+		value[3] = ProcessingDisplay.networkVisibility;
 		checkBox.setArrayValue(value);
 	}
 
@@ -190,7 +193,8 @@ public class P5 {
 		cp5.addButton("start")
 				.setPosition(pX, pY)
 				.setHeight(BASELINE + 2)
-				.setWidth((int)divWidth);
+				.setWidth((int)divWidth)
+				.setLock(true);
 		cp5.addButton("pause")
 				.setPosition(p1X, y)
 				.setHeight(BASELINE + 2)
@@ -252,20 +256,31 @@ public class P5 {
 	  	theEvent.getController().setLock(true);
 	  	cp5.getController("pause").setLock(false);
 	  	cp5.getController("stop").setLock(false);
+		cp5.getController("start").setLock(true);
+		cp5.getController("set_itenerary").setLock(true);
+		cp5.getController("set_number_agent").setLock(true);
 	}
 	
 	void pause(ControlEvent theEvent){
 		if (ProcessingDisplay.isRun() == true){
 			ProcessingDisplay.setRun(false);
 			theEvent.getController().setLabel("resume");
+			cp5.getController("stop").setLock(true);
 		} else {
 			ProcessingDisplay.setRun(true);
 			theEvent.getController().setLabel("pause");
 			applet.thread("runSimulation");
+			cp5.getController("stop").setLock(false);
 		}
 	}
 	void stop(){
-		
+		ProcessingDisplay.setRun(false);
+		cp5.getController("pause").setLock(true);
+		cp5.getController("stop").setLock(true);
+		cp5.getController("start").setLock(true);
+		applet.thread("resetSimulation");
+		cp5.getController("set_itenerary").setLock(false);
+		cp5.getController("set_number_agent").setLock(false);
 	}
 	
 	void setItenerary(){
@@ -301,6 +316,7 @@ public class P5 {
 						human.setVariableType(Human.TESTEDAGENT);
 						human.setItenerary(Simulation.agentPath);
 						model.addHuman(human);
+						cp5.getController("start").setLock(false);
 						//HumanGenerator.generateHuman(ProcessingDisplay.RANDOMAGENTNUM, model);
 					}
 				}
@@ -312,7 +328,15 @@ public class P5 {
 		Textfield textfield = (Textfield) cp5.getController("input_number_agent");
 		textfield.submit(); //make sure the text input on the field are submitted
 		int agentNumber = Integer.valueOf(cp5.getController("input_number_agent").getStringValue());
-		HumanGenerator.generateHuman(agentNumber, model);
+		if (agentNumber > 500){
+			String infoMessage = "Maximum people number is 500";
+			String titleBar = "Maximum number";
+			JOptionPane.showMessageDialog(null, infoMessage, "InfoBox: " + titleBar, JOptionPane.INFORMATION_MESSAGE);
+		} else {
+			HumanGenerator.generateHuman(agentNumber, model);
+			cp5.getController("start").setLock(false);
+			cp5.getController("set_number_agent").setLock(true);
+		}
 	}
 
 	void setModelVisibility() {
@@ -325,6 +349,7 @@ public class P5 {
 		ProcessingDisplay.floorVisibility = (int) values[0];
 		ProcessingDisplay.elevatorVisibility = (int) values[1];
 		ProcessingDisplay.agentVisibility = (int) values[2];
+		ProcessingDisplay.networkVisibility = (int) values[3];
 	}
 	
 	

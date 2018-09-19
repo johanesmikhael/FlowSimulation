@@ -95,6 +95,12 @@ public class Region {
 		return this.humanCounter;
 	}
 
+	public void clearHumans(){
+		if (this.type != ELEVATORREGION){
+			this.humanCounter = 0;
+		}
+	}
+
 	public double getArea(){
 		if (this.area == 0.0) { // the area is not set et
 			int tileNum = this.hashTile.size() + 1;

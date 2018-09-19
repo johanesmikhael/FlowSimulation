@@ -141,6 +141,12 @@ public class InteractiveFloor{
 		}
 		regions.put(id, regionArea);
 	}
+
+	public void clearHumans(){
+		for (RegionArea regionArea : regions.values()){
+			regionArea.clearHumans();
+		}
+	}
 	
 	public int getElevation(){
 		return this.elevation;
@@ -254,6 +260,10 @@ public class InteractiveFloor{
     	int getColor(){
     		return this.color;
     	}
+
+    	void clearHumans(){
+    		this.region.clearHumans();
+		}
 
     	void setDensityColor(){
 			double density = this.region.getDensity();

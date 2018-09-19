@@ -54,6 +54,13 @@ public class EnvironmentModel {
 		HumanPortrayal humanPortrayal = new HumanPortrayal(applet, this, human);
 		this.humans.add(humanPortrayal);
 	}
+
+	public void clearHumanAgents(){
+		this.humans.clear();
+		for (InteractiveFloor floor : floors) {
+			floor.clearHumans();
+		}
+	}
 	
 	private void setFloor(){
 		for (int elevation : Simulation.floorElevationList){

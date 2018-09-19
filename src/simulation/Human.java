@@ -733,6 +733,7 @@ public class Human implements Steppable{
 			writeLocationCSV();
 		}
 	}
+
 	
 	void writeLocationCSV(){
 		final String DELIMITER = "#";
